@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -68,3 +69,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+=======
+# chat-app-client
+This is the frontend of a real-time chat application built using React and Socket.IO. It allows users to send and receive messages in real-time, with a simple and intuitive user interface. The frontend connects to the backend server using Socket.IO to facilitate instant communication between users.
+>>>>>>> fe64e50f9f5a6ad40b382766a81b82995c92ec50
