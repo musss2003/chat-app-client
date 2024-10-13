@@ -1,16 +1,13 @@
-import React from 'react';
-import { BrowserRouter as Router, Route} from 'react-router-dom';
-
-import Join from './components/Join';
+import { Routes, Route } from 'react-router-dom';
 import Chat from './components/Chat';
 
-
-const App = () => (
-    <Router>
-        {/* User Greeted With Join Component */}
-        <Route path="/" exact component={Join} />
-        <Route path="/chat" component={Chat} />
-    </Router>
-);
+const App = () => {
+    return (
+        <Routes>
+            <Route path="/chat" element={<Chat />} />
+        </Routes>
+    );
+};
 
 export default App;
+

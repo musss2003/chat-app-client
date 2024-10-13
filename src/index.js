@@ -1,7 +1,17 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // Import from 'react-dom/client' instead
+import ReactDOM from 'react-dom/client';  // Import 'react-dom/client'
 import App from './App';
+import { BrowserRouter } from 'react-router-dom';
 
-const root = ReactDOM.createRoot(document.getElementById('root')); // Use createRoot
+// Get the root element from the HTML
+const rootElement = document.getElementById('root');
 
-root.render(<App />); // Use root.render() instead of ReactDOM.render()
+// Create the root using ReactDOM.createRoot
+const root = ReactDOM.createRoot(rootElement);
+
+// Render your app using root.render()
+root.render(
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
+);
