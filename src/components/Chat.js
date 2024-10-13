@@ -1,74 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); // Connect to the back-end server
+const socket = io(process.env.REACT_APP_API_URL);
 
 const Chat = () => {
-    const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const [isTyping, setIsTyping] = useState(false);
-    const [typingUser, setTypingUser] = useState('');
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
-        // Listen for incoming messages
-        socket.on('receiveMessage', (newMessage) => {
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
+        socket.on('receiveMessage', (message) => {
+            setMessages((prevMessages) => [...prevMessages, message]);
         });
 
-        // Listen for typing events
-        socket.on('typing', (username) => {
-            setIsTyping(true);
-            setTypingUser(username);
-            setTimeout(() => {
-                setIsTyping(false);
-                setTypingUser(''); // Clear the typing user after timeout
-            }, 3000); // Duration for which typing indicator is shown
-        });
-
-        socket.on('connect', () => {
-            console.log('Connected to Socket.IO server');
-        });
-
-        // Clean up on component unmount
         return () => {
             socket.off('receiveMessage');
-            socket.off('typing'); // Clean up typing listener
-            socket.disconnect();
         };
     }, []);
 
-    const sendMessage = () => {
-        if (message) {
-            socket.emit('sendMessage', message); // Send message to the server
-            setMessage(''); // Clear input field
-        }
-    };
-
-    const handleTyping = () => {
-        socket.emit('typing', 'User'); // Replace 'User' with the actual username
+    const sendMessage = (e) => {
+        e.preventDefault();
+        socket.emit('sendMessage', { content: message, sender: 'User1', receiver: 'User2' });
+        setMessage('');
     };
 
     return (
         <div>
-            <h1>Chat</h1>
             <div>
                 {messages.map((msg, index) => (
-                    <div key={index}>{msg}</div>
+                    <div key={index}>{msg.content}</div>
                 ))}
             </div>
-            <div>
-                <input 
-                    type="text" 
-                    value={message} 
-                    onChange={(e) => {
-                        setMessage(e.target.value);
-                        handleTyping(); // Emit typing event
-                    }} 
+            <form onSubmit={sendMessage}>
+                <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     placeholder="Type a message"
+                    required
                 />
-                <button onClick={sendMessage}>Send</button>
-            </div>
-            {isTyping && <div>{typingUser} is typing...</div>} {/* Display typing indicator */}
+                <button type="submit">Send</button>
+            </form>
         </div>
     );
 };
