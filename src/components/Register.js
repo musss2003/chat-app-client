@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ const Register = () => {
         email: '',
         password: ''
     });
+
+    const navigate = useNavigate();
 
     const { username, email, password } = formData;
 
@@ -17,6 +20,7 @@ const Register = () => {
         try {
             await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, formData);
             alert("User registered successfully");
+            navigate('/login');
         } catch (error) {
             const errorMessage = error.response ? error.response.data : 'An error occurred';
             alert(errorMessage);

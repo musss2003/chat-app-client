@@ -4,14 +4,14 @@ import io from 'socket.io-client';
 
 const socket = io(process.env.REACT_APP_API_URL);
 
-const Messages = ({ currentUser, otherUser }) => {
+const Messages = ({ currentUser, chat }) => {
     const [messages, setMessages] = useState([]);
     const [content, setContent] = useState('');
 
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/${otherUser._id}`, {
+                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/${chat._id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
@@ -25,10 +25,7 @@ const Messages = ({ currentUser, otherUser }) => {
         fetchMessages();
 
         socket.on('receiveMessage', (message) => {
-            if (
-                (message.sender === currentUser._id && message.receiver === otherUser._id) ||
-                (message.sender === otherUser._id && message.receiver === currentUser._id)
-            ) {
+            if (message.chat === chat._id) {
                 setMessages((prevMessages) => [...prevMessages, message]);
             }
         });
@@ -36,14 +33,14 @@ const Messages = ({ currentUser, otherUser }) => {
         return () => {
             socket.off('receiveMessage');
         };
-    }, [currentUser._id, otherUser._id]);
+    }, [chat]);
 
     const sendMessage = async (e) => {
         e.preventDefault();
         const messageData = {
             content,
             sender: currentUser._id,
-            receiver: otherUser._id,
+            chat: chat._id,
         };
 
         try {
@@ -61,10 +58,11 @@ const Messages = ({ currentUser, otherUser }) => {
 
     return (
         <div>
+            <h2>Chat with {chat.name}</h2>
             <div>
                 {messages.map((message) => (
                     <div key={message._id}>
-                        <strong>{message.sender === currentUser._id ? 'You' : otherUser.username}:</strong> {message.content}
+                        <strong>{message.sender === currentUser._id ? 'You' : message.sender.username}:</strong> {message.content}
                     </div>
                 ))}
             </div>

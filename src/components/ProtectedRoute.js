@@ -1,10 +1,14 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ element: Component, ...rest }) => {
-    const isAuthenticated = !!localStorage.getItem('token');
+const ProtectedRoute = ({ element: Component, currentUser, ...rest }) => {
+    const token = localStorage.getItem('token');
 
-    return isAuthenticated ? <Component {...rest} /> : <Navigate to="/login" />;
+    if (!token) {
+        return <Navigate to="/login" />;
+    }
+
+    return <Component {...rest} currentUser={currentUser} />;
 };
 
 export default ProtectedRoute;

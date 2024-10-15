@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.main-page {
+    display: flex;
+}
+
+
+.content {
+    position: relative;
+    left: 120px;
+    flex-grow: 1;
+    padding: 20px;
+}

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     });
+
+    const navigate = useNavigate();
 
     const { username, password } = formData;
 
@@ -13,14 +16,15 @@ const Login = () => {
 
     const onSubmit = async e => {
         e.preventDefault();
-
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, formData);
 
-            console.log(res.data.token);
-
             localStorage.setItem('token', res.data.token);
-            alert('User logged in successfully');
+
+            onLogin(res.data.user);
+
+            navigate('/main');
+
         } catch (error) {
             const errorMessage = error.response ? error.response.data : 'An error occurred';
             alert(errorMessage);
@@ -29,7 +33,7 @@ const Login = () => {
 
     return (
         <form onSubmit={onSubmit}>
-            <input type="text" name="username" value={username} onChange={onChange} placeholder="Username" required />
+            <input type="username" name="username" value={username} onChange={onChange} placeholder="Username" required />
             <input type="password" name="password" value={password} onChange={onChange} placeholder="Password" required />
             <button type="submit">Login</button>
         </form>
