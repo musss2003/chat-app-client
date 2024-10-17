@@ -48,14 +48,14 @@ const SearchUser = ({ currentUser, onUserSelect, selectedUserId }) => {
                 {results.map(user => (
                     <li
                         key={user._id}
-                        onClick={() => {onUserSelect(user)}}
-                        className={`result-item ${selectedUserId && selectedUserId === user._id ? 'selected' : ''}`}
+                        onClick={() => {onUserSelect(user); setResults([]); setQuery('');}}
+                        className={`result-item ${selectedUserId && selectedUserId === user._id ? 'search-selected' : ''}`}
                     >
-                        <div className="user-info">
-                            <span className="user-name">{user.username}</span>
-                            <span className="last-online">{formatTimeStamp(user.timeStamp)}</span>
+                        <div className="search-user-info">
+                            <span className="search-user-name">{user.username}</span>
+                            <span className="search-last-online">{formatTimeStamp(user.timeStamp)}</span>
                         </div>
-                        {user.lastMessage ? (<div className="last-message">
+                        {user.lastMessage ? (<div className="search-last-message">
                             {user.lastMessage.sender === currentUser._id ? (
                             <span>You: {user.lastMessage.content}</span>
                         ) : (

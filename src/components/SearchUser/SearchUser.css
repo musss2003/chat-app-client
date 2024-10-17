@@ -59,30 +59,25 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.result-item.selected {
-    border-color: #6e00ff;
-    box-shadow: 0 4px 8px rgba(68, 33, 95, 0.2);
-}
-
-.user-info {
+.search-user-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
 }
 
-.user-name {
+.search-user-name {
     font-weight: bold;
     font-size: 1.1em;
     color: #333;
 }
 
-.last-online {
+.search-last-online {
     font-size: 10px;
     color: #888;
 }
 
-.last-message {
+.search-last-message {
     font-size: 0.9em;
     color: #555;
     margin-top: 4px;
