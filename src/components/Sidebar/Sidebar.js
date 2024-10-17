@@ -4,7 +4,7 @@ import { faComments, faUser, faSearch, faSignOutAlt } from '@fortawesome/free-so
 import './Sidebar.css';
 
 const Sidebar = () => {
-    const [activeComponent, setActiveComponent] = useState('');
+    const [activeComponent, setActiveComponent] = useState('chatList');
 
     const handleSetActiveComponent = (component) => {
         setActiveComponent(component);

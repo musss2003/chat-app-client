@@ -7,38 +7,44 @@ import ResetPassword from './components/ResetPassword';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import MainPage from './container/MainPage/MainPage.js';
-import { io } from 'socket.io-client';
+import socketIOClient from 'socket.io-client';
+import './App.css';
 
 
 
 const App = () => {
     const [currentUser, setCurrentUser] = useState(null);
-    const socket = io(process.env.REACT_APP_API_URL); // Adjust the URL as needed
+    const [loading, setLoading] = useState(true); // Add loading state
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
+            try {
+                const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+                if (token) {
                     const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/me`, {
                         headers: {
-                            Authorization: `Bearer ${token}`,
+                            'Authorization': `Bearer ${token}`
                         },
                     });
 
                     // res.data contains token and user
                     setCurrentUser(res.data.user);
+                    setLoading(false); // Set loading to false after fetching user
 
                     // Notify the server that the user is online
-                    socket.emit('userOnline', currentUser._id);
+                    const socket = socketIOClient(process.env.REACT_APP_API_URL);
+                    socket.emit('userOnline', res.data.user._id);
 
                     // Clean up on component unmount
                     return () => {
                         socket.disconnect();
                     };
-                } catch (error) {
-                    console.error('Error fetching current user:', error);
+                } else {
+                    setLoading(false); // Set loading to false if no token is found
                 }
+            } catch (error) {
+                console.error('Error fetching current user:', error);
+                setLoading(false); // Set loading to false on error
             }
         };
 
@@ -49,13 +55,17 @@ const App = () => {
         setCurrentUser(user);
     };
 
+    if (loading) {
+        return <div className="lds-dual-ring"></div>// Render a loading indicator while fetching user
+    }
+
     return (
         <Routes>
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/main" element={<ProtectedRoute element={MainPage} currentUser={currentUser} />} />
+            {currentUser && <Route path="/main" element={<ProtectedRoute element={MainPage} currentUser={currentUser} />} />}
             <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
     );

@@ -12,6 +12,7 @@ const ChatList = ({ currentUser, onChatSelect }) => {
         const fetchChats = async () => {
             try {
                 const token = localStorage.getItem('token');
+
                 const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/chats`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
