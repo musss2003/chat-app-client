@@ -8,9 +8,6 @@ const ProtectedRoute = ({ element: Component, currentUser, ...rest }) => {
         return <Navigate to="/login" />;
     }
 
-    if (!currentUser) {
-        return <div>Loading...</div>;
-    }
 
     return <Component {...rest} currentUser={currentUser} />;
 };

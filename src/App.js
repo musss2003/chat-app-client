@@ -1,15 +1,19 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute.js';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import MainPage from './container/MainPage/MainPage.js';
+import { io } from 'socket.io-client';
+
+
 
 const App = () => {
     const [currentUser, setCurrentUser] = useState(null);
+    const socket = io(process.env.REACT_APP_API_URL); // Adjust the URL as needed
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -21,9 +25,17 @@ const App = () => {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-                    
+
                     // res.data contains token and user
                     setCurrentUser(res.data.user);
+
+                    // Notify the server that the user is online
+                    socket.emit('userOnline', currentUser._id);
+
+                    // Clean up on component unmount
+                    return () => {
+                        socket.disconnect();
+                    };
                 } catch (error) {
                     console.error('Error fetching current user:', error);
                 }

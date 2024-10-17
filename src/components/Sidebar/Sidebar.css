@@ -63,3 +63,7 @@
     margin-right: 10px;
 }
 
+.active {
+    border-right: 4px solid orange; /* Example border */
+    border-radius: 2px;
+}

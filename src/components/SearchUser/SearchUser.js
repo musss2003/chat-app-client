@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './SearchUser.css'; // Import the CSS file
+import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
 const SearchUser = () => {
     const [query, setQuery] = useState('');
@@ -44,20 +45,19 @@ const SearchUser = () => {
             />
             <ul className="results-list">
                 {results.map(user => (
-                    <li 
-                        key={user._id} 
+                    <li
+                        key={user._id}
                         onClick={() => setSelectedUser(user)}
                         className={`result-item ${selectedUser && selectedUser._id === user._id ? 'selected' : ''}`}
                     >
-                        {user.username}
+                        <div className="user-info">
+                            <span className="user-name">{user.username}</span>
+                            <span className="last-online">{formatTimeStamp(user.timeStamp)}</span>
+                        </div>
+                        <div className="last-message">Last message: {user.lastMessage}</div>
                     </li>
                 ))}
             </ul>
-            {selectedUser && (
-                <div className="selected-user">
-                    Selected User: {selectedUser.username}
-                </div>
-            )}
         </div>
     );
 };
