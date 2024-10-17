@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './Chat.css';
 import axios from 'axios';
 import io from 'socket.io-client';
+import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
 const socket = io(process.env.REACT_APP_API_URL);
 
 const Chat = ({ currentUser, selectedUserId }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -18,6 +20,7 @@ const Chat = ({ currentUser, selectedUserId }) => {
                         Authorization: `Bearer ${token}`,
                     }
                 });
+
                 setMessages(response.data);
             } catch (error) {
                 console.error('Error fetching messages:', error);
@@ -56,28 +59,34 @@ const Chat = ({ currentUser, selectedUserId }) => {
         }
     };
 
+
     return (
-        <div className="chat-wrapper">
+        <div className='chat-wrapper'>
             <div className="chat-container">
-                <div className="messages">
-                    {messages.map((message, index) => (
-                        <div key={index} className={`message ${message.sender === currentUser._id ? 'sent' : 'received'}`}>
-                            <p>{message.content}</p>
+                {messages.map((message) => (
+                    <div
+                        key={message._id}
+                        className={`message ${message.sender === currentUser._id ? 'sent' : 'received'}`}
+                    >
+                        <div className="message-content">
+                            {message.content}
+                            <div className="message-time">{formatTimeStamp(message.timestamp)}</div>
                         </div>
-                    ))}
-                </div>
-                <form onSubmit={handleSendMessage} className="message-form">
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type a message..."
-                    />
-                    <button type="submit">Send</button>
-                </form>
+                    </div>
+                ))}
+            </div>
+            <div className="chat-input">
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                />
+                <button onClick={handleSendMessage}>Send</button>
             </div>
         </div>
     );
 };
+
 
 export default Chat;

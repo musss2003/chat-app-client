@@ -26,6 +26,10 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
+.selected{
+    background-color: rgba(110, 0, 255, 0.2);
+    color: white;
+}
 
 .chat-item:hover {
     background-color: #e6e6e6;

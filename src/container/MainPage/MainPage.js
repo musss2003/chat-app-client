@@ -23,7 +23,7 @@ const MainPage = ({ currentUser }) => {
             </div>
             <div className="middle-column">
                 <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} />
-                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect}/>
+                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} />
                 {/* <Groups /> Add your Groups component here */}
             </div>
             <div className="right-column">
