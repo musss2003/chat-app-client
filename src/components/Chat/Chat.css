@@ -1,13 +1,44 @@
 .chat-wrapper {
+  padding: 10px;
   min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  position: relative; /* Ensure the chat-wrapper is the reference for the sticky positioning */
+}
+
+.chat-topbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  background-color: white;
+  z-index: 1000; /* Ensure it stays above other content */
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.last-online {
+  font-size: 0.9em;
+  color: #666;
 }
 
 .chat-container {
   display: flex;
   flex-direction: column;
+  flex-grow: 1; /* Allow the container to grow and take available space */
   padding: 20px;
   justify-content: flex-end; /* Ensure messages start from the bottom */
 }
@@ -26,7 +57,7 @@
 
 .message.received {
   justify-content: flex-start;
-  background-color: #737077;
+  background-color: #f1f0f0; /* Light grey color for received messages */
   align-self: flex-start; /* Aligns to the left */
 }
 

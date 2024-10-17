@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './MainPage.css'; // Import the CSS file
 import SearchUser from '../../components/SearchUser/SearchUser';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -27,7 +27,13 @@ const MainPage = ({ currentUser }) => {
                 {/* <Groups /> Add your Groups component here */}
             </div>
             <div className="right-column">
-                {selectedUserId && <Chat currentUser={currentUser} selectedUserId={selectedUserId} />}
+                {selectedUserId ? (
+                    <Chat currentUser={currentUser} selectedUserId={selectedUserId} />
+                ) : (
+                    <div className="select-user-message">
+                        Please select a user to start chatting
+                    </div>
+                )}
             </div>
         </div>
     );

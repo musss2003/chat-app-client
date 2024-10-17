@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Chat.css';
 import axios from 'axios';
 import io from 'socket.io-client';
@@ -9,6 +9,9 @@ const socket = io(process.env.REACT_APP_API_URL);
 const Chat = ({ currentUser, selectedUserId }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
+    const chatContainerRef = useRef(null);
+
 
 
     useEffect(() => {
@@ -21,7 +24,20 @@ const Chat = ({ currentUser, selectedUserId }) => {
                     }
                 });
 
+                const responseTwo = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${selectedUserId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
                 setMessages(response.data);
+                setSelectedUser(responseTwo.data);
+
+                // Scroll to bottom after setting messages
+                if (chatContainerRef.current) {
+                    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+                }
+
             } catch (error) {
                 console.error('Error fetching messages:', error);
             }
@@ -46,6 +62,13 @@ const Chat = ({ currentUser, selectedUserId }) => {
         };
     }, [selectedUserId, currentUser._id]);
 
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            console.log('scrolling');
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [messages]);
+
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (newMessage.trim()) {
@@ -62,6 +85,12 @@ const Chat = ({ currentUser, selectedUserId }) => {
 
     return (
         <div className='chat-wrapper'>
+            {selectedUser && <div className="chat-topbar">
+                <div className="user-info">
+                    <div className='username'>{selectedUser.username}</div>
+                    <div className='last-online'>{formatTimeStamp(selectedUser.timeStamp)}</div>
+                </div>
+            </div>}
             <div className="chat-container">
                 {messages.map((message) => (
                     <div
