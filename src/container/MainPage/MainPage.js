@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
-import ChatList from '../../components/ChatList';
-import SearchUser from '../../components/SearchUser';
-import Messages from '../../components/Messages';
-import SearchMessages from '../../components/SearchMessages';
+import React, { useState, useEffect } from 'react';
+import './MainPage.css'; // Import the CSS file
+import SearchUser from '../../components/SearchUser/SearchUser';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import './MainPage.css'; // Import CSS for styling
+import ChatList from '../../components/ChatList';
+import Messages from '../../components/Messages';
 
-const MainPage = ({ currentUser }) => {
-    const [activeComponent, setActiveComponent] = useState('chatList');
-    const [selectedChat, setSelectedChat] = useState(null);
+const MainPage = ({ currentUser, setActiveComponent, handleChatSelect, selectedChat }) => {
+    useEffect(() => {
+        // Your existing useEffect logic
+    }, [currentUser]);
 
-    const handleChatSelect = (chat) => {
-        setSelectedChat(chat);
-        setActiveComponent('messages');
-    };
+    if (!currentUser) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="main-page">
-            <Sidebar setActiveComponent={setActiveComponent} />
-            <div className="content">
-                {activeComponent === 'chatList' && <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} />}
-                {activeComponent === 'searchUser' && <SearchUser />}
-                {activeComponent === 'messages' && selectedChat && <Messages currentUser={currentUser} chat={selectedChat} />}
-                {activeComponent === 'searchMessages' && <SearchMessages />}
+            <div className="left-column">
+                <Sidebar setActiveComponent={setActiveComponent} />
+            </div>
+            <div className="middle-column">
+                <SearchUser />
+                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} />
+                {/* <Groups /> Add your Groups component here */}
+            </div>
+            <div className="right-column">
+                {/* <Messages currentUser={currentUser} chat={selectedChat} /> */}
             </div>
         </div>
     );

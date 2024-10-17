@@ -12,7 +12,6 @@ const App = () => {
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
-        // Fetch current user information from local storage or API
         const fetchCurrentUser = async () => {
             const token = localStorage.getItem('token');
             if (token) {
@@ -22,10 +21,9 @@ const App = () => {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-
-                    console.log(res);
-
-                    setCurrentUser(res.data);
+                    
+                    // res.data contains token and user
+                    setCurrentUser(res.data.user);
                 } catch (error) {
                     console.error('Error fetching current user:', error);
                 }

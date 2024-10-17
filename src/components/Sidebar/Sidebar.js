@@ -5,7 +5,7 @@ import './Sidebar.css';
 
 const Sidebar = ({ setActiveComponent }) => {
     return (
-        <div className="main">
+        <div className="sidebar-container">
             <div className='sidebar first-part'>
                 <ul>
                     <li>

@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
 const ChatList = ({ currentUser, onChatSelect }) => {
     const [chats, setChats] = useState([]);
 
     useEffect(() => {
+        if (!currentUser) return;
+
         const fetchChats = async () => {
+
             try {
-                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/chats`, {
+                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/chats`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        Authorization: `Bearer ${currentUser.token}`,
                     },
+                    query: { userId: currentUser._id }
                 });
+                console.log('Fetched chats:', res.data);
                 setChats(res.data);
             } catch (error) {
                 console.error('Error fetching chats:', error);
@@ -19,7 +24,11 @@ const ChatList = ({ currentUser, onChatSelect }) => {
         };
 
         fetchChats();
-    }, []);
+    }, [currentUser]);
+
+    if (!currentUser) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>
