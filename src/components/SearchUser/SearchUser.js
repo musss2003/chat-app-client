@@ -3,7 +3,7 @@ import axios from 'axios';
 import './SearchUser.css'; // Import the CSS file
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
-const SearchUser = ({ currentUser, onUserSelect, selectedUserId }) => {
+const SearchUser = ({ currentUser, onUserSelect, selectedUserId, renewMessages }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
 
@@ -33,7 +33,7 @@ const SearchUser = ({ currentUser, onUserSelect, selectedUserId }) => {
         }, 300);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [query]);
+    }, [query, renewMessages]);
 
     return (
         <div className="search-container">

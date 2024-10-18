@@ -3,30 +3,31 @@ import React, { useState, useEffect } from 'react';
 import './ChatList.css'; // Import the CSS file for styling
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
-const ChatList = ({ currentUser, onChatSelect, selectedUserId}) => {
+const ChatList = ({ currentUser, onChatSelect, selectedUserId, renewMessages }) => {
     const [chats, setChats] = useState([]);
+
+    const fetchChats = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/chats`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            setChats(res.data);
+        } catch (error) {
+            console.error('Error fetching chats:', error);
+        }
+    };
 
     useEffect(() => {
         if (!currentUser) return;
 
-        const fetchChats = async () => {
-            try {
-                const token = localStorage.getItem('token');
-
-                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/chats`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-
-                setChats(res.data);
-            } catch (error) {
-                console.error('Error fetching chats:', error);
-            }
-        };
 
         fetchChats();
-    }, [currentUser]);
+    }, [currentUser, renewMessages]);
 
     return (
         <div className="chat-list-container">
@@ -34,9 +35,9 @@ const ChatList = ({ currentUser, onChatSelect, selectedUserId}) => {
                 {chats.map(chat => {
                     const isSelected = chat.sender._id === selectedUserId || chat.receiver._id === selectedUserId;
                     return (
-                        <li 
-                            key={chat._id} 
-                            className={`chat-item ${isSelected ? 'selected' : ''}`} 
+                        <li
+                            key={chat._id}
+                            className={`chat-item ${isSelected ? 'selected' : ''}`}
                             onClick={() => onChatSelect(chat)}
                         >
                             <div className="chat-avatar"></div>

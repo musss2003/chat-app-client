@@ -1,7 +1,7 @@
 .main-page {
   display: grid;
   grid-template-columns: 0.5fr 3fr 4fr; /* Balanced column widths */
-  height: 95vh;
+  height: 97vh;
   box-sizing: border-box;
   padding: 10px; /* Add padding to the overall layout */
   overflow: hidden;

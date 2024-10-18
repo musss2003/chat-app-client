@@ -33,7 +33,6 @@ const App = () => {
 
                     // Notify the server that the user is online
                     const socket = socketIOClient(process.env.REACT_APP_API_URL);
-                    socket.emit('userOnline', res.data.user._id);
 
                     // Clean up on component unmount
                     return () => {
