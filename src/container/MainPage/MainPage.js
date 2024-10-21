@@ -1,54 +1,89 @@
 import React, { useEffect, useState } from 'react';
-import './MainPage.css'; // Import the CSS file
+import './MainPage.css';
 import SearchUser from '../../components/SearchUser/SearchUser';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ChatList from '../../components/ChatList/ChatList';
 import Chat from '../../components/Chat/Chat';
 import io from 'socket.io-client';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+const socket = io(process.env.REACT_APP_API_URL);
+
 
 
 const MainPage = ({ currentUser }) => {
     const [messages, setMessages] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState(null);
-    const [renewMessages, setRenewMessages] = useState(false);
+    const [chats, setChats] = useState([]);
+    const navigate = useNavigate();
 
-    const socket = io(process.env.REACT_APP_API_URL);
-
-
+    // Handle selecting a chat from the chat list
     const handleChatSelect = (chat) => {
-        setRenewMessages(false);
         setSelectedUserId(chat.sender._id === currentUser._id ? chat.receiver._id : chat.sender._id);
-    }
+    };
 
+    // Handle selecting a user from search
     const handleUserSelect = (user) => {
-        setRenewMessages(false);
         setSelectedUserId(user._id);
-    }
+    };
 
     useEffect(() => {
+
+
+    });
+
+    // Fetch messages and handle socket events
+    useEffect(() => {
+
+        if (!currentUser) return;
+
+        // Join the room when a specific chat is selected
+        if (selectedUserId) {
+            socket.emit('joinRoom', { userId: currentUser._id, selectedUserId });
+        } else{
+            socket.emit('joinRoomAlone', { userId: currentUser._id});
+        }
+
+        const fetchChats = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/chats`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                setChats(res.data);
+            } catch (error) {
+                console.error('Error fetching chats:', error);
+            }
+        };
+
+        fetchChats();
+
+        socket.on('refreshChatList', () => {
+            console.log('Refreshing chat list');    
+            fetchChats();
+        });
+
+        if (!currentUser || !selectedUserId) return;
+
         const fetchMessages = async () => {
-            if (!selectedUserId) return;
-
             const token = localStorage.getItem('token');
-
             try {
                 const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/${selectedUserId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
                 });
-
-                const responseTwo = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${selectedUserId}`, {
+                const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${selectedUserId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
                 });
 
                 setMessages(response.data);
-                setSelectedUser(responseTwo.data);
-
+                setSelectedUser(userResponse.data);
             } catch (error) {
                 console.error('Error fetching messages:', error);
             }
@@ -56,26 +91,29 @@ const MainPage = ({ currentUser }) => {
 
         fetchMessages();
 
-        // Join the room
-        socket.emit('joinRoom', { userId: currentUser._id, selectedUserId });
-
+        // Clear any previous 'receiveMessage' listener before setting up a new one
+        socket.off('receiveMessage');
         socket.on('receiveMessage', (message) => {
+            console.log('Received message:', message);
+            fetchChats(); // Fetch the updated chat list
             setMessages((prevMessages) => [...prevMessages, message]);
-            setRenewMessages((prev) => prev + 1);
         });
+
 
         // Notify the server that the user is online
         socket.emit('userOnline', currentUser._id);
 
+        // Cleanup: Leave room and remove socket listeners on component unmount
         return () => {
-            socket.off('receiveMessage');
+            socket.off('receiveMessage'); // Remove the listener to prevent duplicate handling
+            socket.emit('leaveRoom', { userId: currentUser._id, selectedUserId });
         };
+    }, [currentUser, selectedUserId]);
 
-    }, [currentUser, selectedUserId, messages.length]);
-
-    const handleSendMessage = (message) => {
+    // Handle sending messages
+    const handleSendMessage = async (message) => {
+        // Emit the message to the server via socket
         socket.emit('sendMessage', message);
-        setRenewMessages((prev) => prev + 1);
     };
 
     return (
@@ -84,13 +122,12 @@ const MainPage = ({ currentUser }) => {
                 <Sidebar />
             </div>
             <div className="middle-column">
-                <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} renewMessages={renewMessages} />
-                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} renewMessages={renewMessages} />
-                {/* <Groups /> Add your Groups component here */}
+                <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} />
+                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} />
             </div>
             <div className="right-column">
-                {selectedUserId ? (
-                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages}  />
+                {selectedUser ? (
+                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} />
                 ) : (
                     <div className="select-user-message">
                         Please select a user to start chatting

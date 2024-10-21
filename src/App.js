@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute.js';
@@ -11,10 +11,10 @@ import socketIOClient from 'socket.io-client';
 import './App.css';
 
 
-
 const App = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true); // Add loading state
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -44,10 +44,12 @@ const App = () => {
             } catch (error) {
                 console.error('Error fetching current user:', error);
                 setLoading(false); // Set loading to false on error
+                navigate('/login');
             }
         };
 
         fetchCurrentUser();
+        
     }, []);
 
     const handleLogin = (user) => {

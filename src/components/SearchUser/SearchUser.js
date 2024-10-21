@@ -20,8 +20,6 @@ const SearchUser = ({ currentUser, onUserSelect, selectedUserId, renewMessages }
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
                 });
-
-                console.log('Search results:', res.data);
                 setResults(res.data);
             } catch (error) {
                 console.error('Error searching users:', error);

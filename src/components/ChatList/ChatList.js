@@ -1,42 +1,23 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './ChatList.css'; // Import the CSS file for styling
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
-const ChatList = ({ currentUser, onChatSelect, selectedUserId, renewMessages }) => {
-    const [chats, setChats] = useState([]);
-
-    const fetchChats = async () => {
-        try {
-            const token = localStorage.getItem('token');
-
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/chats`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setChats(res.data);
-        } catch (error) {
-            console.error('Error fetching chats:', error);
-        }
-    };
-
+const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats }) => {
+    
     useEffect(() => {
-        if (!currentUser) return;
 
-
-        fetchChats();
-    }, [currentUser, renewMessages]);
+    }, [chats, selectedUserId]);
 
     return (
         <div className="chat-list-container">
             <ul className="chat-list">
                 {chats.map(chat => {
                     const isSelected = chat.sender._id === selectedUserId || chat.receiver._id === selectedUserId;
+                    const hasUnreadMessages = chat.unreadCount > 0;
+
                     return (
                         <li
-                            key={chat._id}
+                            key={chat.receiver._id}
                             className={`chat-item ${isSelected ? 'selected' : ''}`}
                             onClick={() => onChatSelect(chat)}
                         >
@@ -61,6 +42,7 @@ const ChatList = ({ currentUser, onChatSelect, selectedUserId, renewMessages }) 
                                         <span>{chat.content}</span>
                                     )}
                                 </div>
+                                {hasUnreadMessages && <div className="unread-indicator">{chat.unreadCount}</div>}
                             </div>
                         </li>
                     );
