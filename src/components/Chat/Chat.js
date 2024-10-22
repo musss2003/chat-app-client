@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Chat.css';
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
-import axios from 'axios';
+import io from 'socket.io-client';
+const socket = io(process.env.REACT_APP_API_URL);
 
-const Chat = ({ currentUser, selectedUser, onSendMessage, messages }) => {
+
+const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers, typingUser }) => {
     const [newMessage, setNewMessage] = useState('');
     const messageEndRef = useRef(null); // Ref for the last message
     const inputRef = useRef(null); // Reference for the input element
+    const [isTyping, setIsTyping] = useState(false); // State to track typing status
+    const typingTimeoutRef = useRef(null); // Ref for typing timeout
+
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -23,7 +28,20 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages }) => {
 
             // Clear input
             setNewMessage('');
+            socket.emit('stopTyping', { senderId: currentUser._id, receiverId: selectedUser._id });
         }
+    };
+
+    const handleTyping = () => {
+        if (!isTyping) {
+            setIsTyping(true);
+            socket.emit('typing', { senderId: currentUser._id, receiverId: selectedUser._id });
+        }
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+            socket.emit('stopTyping', { senderId: currentUser._id, receiverId: selectedUser._id });
+        }, 3000);
     };
 
     // Scroll to the bottom of the chat container when messages change
@@ -41,16 +59,20 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages }) => {
 
         const markMessagesAsRead = async () => {
             if (messages.length > 0 && messageEndRef.current) {
-                await axios.post(`${process.env.REACT_APP_API_URL}/api/messages/markAsRead`, {
+                // Mark messages as read in db and emit to the server
+                socket.emit('markMessagesAsRead', {
                     userId: currentUser._id,
-                    chatId: selectedUser._id,
+                    selectedUserId: selectedUser._id,
                 });
             }
         };
 
         markMessagesAsRead();
 
-    }, [messages]);
+    }, [messages, onlineUsers]);
+
+    const isSelectedUserOnline = onlineUsers[selectedUser?._id] === 'online';
+
 
     return (
         <div className="chat-wrapper">
@@ -58,7 +80,11 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages }) => {
                 <div className="chat-topbar">
                     <div className="user-info">
                         <div className="username">{selectedUser.username}</div>
-                        <div className="last-online">{formatTimeStamp(selectedUser.timeStamp)}</div>
+                        <div className={`last-online ${isSelectedUserOnline ? 'online' : ''}`}>
+
+                            {isSelectedUserOnline ? 'Online' : formatTimeStamp(selectedUser.timeStamp)}
+                            {typingUser && <div className="typing-indicator">{selectedUser.username} is typing...</div>}
+                        </div>
                     </div>
                 </div>
             )}
@@ -87,6 +113,8 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages }) => {
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             handleSendMessage(e);
+                        } else {
+                            handleTyping();
                         }
                     }}
                     ref={inputRef} // Attach the reference here

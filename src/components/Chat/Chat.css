@@ -33,7 +33,11 @@
   
   .last-online {
     font-size: 0.9em;
-    color: #666;
+    color: #999;
+  }
+.online{
+    color: green;
+    font-weight: 600;
   }
   
   .chat-container {

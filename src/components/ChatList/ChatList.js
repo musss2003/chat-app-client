@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import './ChatList.css'; // Import the CSS file for styling
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
-const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats }) => {
-    
+const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats, onlineUsers }) => {
+
     useEffect(() => {
 
-    }, [chats, selectedUserId]);
+    }, [chats, selectedUserId, onlineUsers]);
 
     return (
         <div className="chat-list-container">
@@ -14,6 +14,8 @@ const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats }) => {
                 {chats.map(chat => {
                     const isSelected = chat.sender._id === selectedUserId || chat.receiver._id === selectedUserId;
                     const hasUnreadMessages = chat.unreadCount > 0;
+                    const otherUserId = chat.sender._id === currentUser._id ? chat.receiver._id : chat.sender._id;
+                    const isOnline = onlineUsers[otherUserId] === 'online';
 
                     return (
                         <li
@@ -21,7 +23,9 @@ const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats }) => {
                             className={`chat-item ${isSelected ? 'selected' : ''}`}
                             onClick={() => onChatSelect(chat)}
                         >
-                            <div className="chat-avatar"></div>
+                            <div className="chat-avatar">
+                                {isOnline && <div className="online-indicator"></div>}
+                            </div>
                             <div className="chat-details">
                                 <div className="chat-header">
                                     <div className="chat-user">

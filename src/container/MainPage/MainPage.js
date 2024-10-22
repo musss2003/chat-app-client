@@ -6,7 +6,6 @@ import ChatList from '../../components/ChatList/ChatList';
 import Chat from '../../components/Chat/Chat';
 import io from 'socket.io-client';
 import axios from 'axios';
-import { useNavigate } from 'react-router';
 const socket = io(process.env.REACT_APP_API_URL);
 
 
@@ -16,7 +15,19 @@ const MainPage = ({ currentUser }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [chats, setChats] = useState([]);
-    const navigate = useNavigate();
+    const [onlineUsers, setOnlineUsers] = useState({}); // State to keep track of online users
+    const [typingUser, setTypingUser] = useState(null); // State to track who is typing
+
+
+
+
+    const updateUserStatus = (userId, status) => {
+        setOnlineUsers(prevState => ({
+            ...prevState,
+            [userId]: status
+        }));
+    };
+
 
     // Handle selecting a chat from the chat list
     const handleChatSelect = (chat) => {
@@ -28,21 +39,22 @@ const MainPage = ({ currentUser }) => {
         setSelectedUserId(user._id);
     };
 
-    useEffect(() => {
-
-
-    });
-
     // Fetch messages and handle socket events
     useEffect(() => {
 
-        if (!currentUser) return;
+        // Notify the server that the user is online
+        socket.emit('userOnline', currentUser._id);
+
+        socket.on('updateUserStatus', ({ userId, status }) => {
+            // Update the UI to reflect the user's online status
+            updateUserStatus(userId, status);
+        });
 
         // Join the room when a specific chat is selected
         if (selectedUserId) {
             socket.emit('joinRoom', { userId: currentUser._id, selectedUserId });
-        } else{
-            socket.emit('joinRoomAlone', { userId: currentUser._id});
+        } else {
+            socket.emit('joinRoomAlone', { userId: currentUser._id });
         }
 
         const fetchChats = async () => {
@@ -62,7 +74,6 @@ const MainPage = ({ currentUser }) => {
         fetchChats();
 
         socket.on('refreshChatList', () => {
-            console.log('Refreshing chat list');    
             fetchChats();
         });
 
@@ -91,6 +102,20 @@ const MainPage = ({ currentUser }) => {
 
         fetchMessages();
 
+        socket.on('typing', async ({ senderId }) => {
+            if (senderId === selectedUserId) { // Use selectedUserId instead of selectedUser._id
+                setTypingUser(selectedUser); // Ensure selectedUser is set before using it
+                console.log(`${selectedUser?.username} is typing...`);
+            }
+        });
+
+        socket.on('stopTyping', ({ senderId }) => {
+            if (senderId === selectedUserId) { // Use selectedUserId here as well
+                setTypingUser(null);
+                console.log(`${selectedUser?.username} stopped typing.`);
+            }
+        });
+
         // Clear any previous 'receiveMessage' listener before setting up a new one
         socket.off('receiveMessage');
         socket.on('receiveMessage', (message) => {
@@ -99,13 +124,13 @@ const MainPage = ({ currentUser }) => {
             setMessages((prevMessages) => [...prevMessages, message]);
         });
 
-
-        // Notify the server that the user is online
-        socket.emit('userOnline', currentUser._id);
-
         // Cleanup: Leave room and remove socket listeners on component unmount
         return () => {
             socket.off('receiveMessage'); // Remove the listener to prevent duplicate handling
+            socket.off('userOnline'); // Remove online listener
+            socket.off('updateUserStatus'); // Remove offline listener
+            socket.off('typing');
+            socket.off('stopTyping');
             socket.emit('leaveRoom', { userId: currentUser._id, selectedUserId });
         };
     }, [currentUser, selectedUserId]);
@@ -123,11 +148,11 @@ const MainPage = ({ currentUser }) => {
             </div>
             <div className="middle-column">
                 <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} />
-                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} />
+                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} onlineUsers={onlineUsers} />
             </div>
             <div className="right-column">
                 {selectedUser ? (
-                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} />
+                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} onlineUsers={onlineUsers} typingUser={typingUser} />
                 ) : (
                     <div className="select-user-message">
                         Please select a user to start chatting
