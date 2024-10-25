@@ -2,7 +2,7 @@
 
 A real-time chat application built using React, Express, MongoDB, and Socket.IO. This application enables users to communicate seamlessly with each other, providing a rich set of features to enhance the chatting experience.
 
-![Chat Application Screenshot](assets/main_page.png)
+![Chat Application Screenshot](src/assets/main_page.png)
 
 
 ## Table of Contents
@@ -23,9 +23,9 @@ This chat application allows users to create accounts, log in, and chat with oth
    - Secure login functionality allows users to authenticate with their credentials.
    - Passwords are hashed and stored securely in the database.
 
-   ![Chat Application Login](assets/login_page.png)
+   ![Chat Application Login](src/assets/login_page.png)
 
-   ![Chat Application Register](assets/register_page.png)
+   ![Chat Application Register](src/assets/register_page.png)
 
 2. **Real-Time Messaging**
    - Utilizes Socket.IO to enable real-time communication between users.
