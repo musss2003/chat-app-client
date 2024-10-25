@@ -78,7 +78,7 @@ This chat application allows users to create accounts, log in, and chat with oth
 ### Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/chat-app.git
+    git clone https://github.com/musss2003/chat-app-client.git
     ```
 
 2. Navigate to the project folder:
