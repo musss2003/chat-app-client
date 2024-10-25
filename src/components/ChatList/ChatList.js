@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import './ChatList.css'; // Import the CSS file for styling
+import './ChatList.css';
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
 
-const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats, onlineUsers }) => {
+const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats, onlineUsers, typingUserId }) => {
 
     useEffect(() => {
 
-    }, [chats, selectedUserId, onlineUsers]);
+    }, [chats, selectedUserId, onlineUsers, typingUserId]);
 
     return (
         <div className="chat-list-container">
@@ -16,6 +16,7 @@ const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats, onlineUser
                     const hasUnreadMessages = chat.unreadCount > 0;
                     const otherUserId = chat.sender._id === currentUser._id ? chat.receiver._id : chat.sender._id;
                     const isOnline = onlineUsers[otherUserId] === 'online';
+                    const isTyping = typingUserId === otherUserId; // Check if this user is typing
 
                     return (
                         <li
@@ -40,7 +41,9 @@ const ChatList = ({ currentUser, onChatSelect, selectedUserId, chats, onlineUser
                                     </div>
                                 </div>
                                 <div className="chat-content">
-                                    {chat.sender._id === currentUser._id ? (
+                                    {isTyping ? (
+                                        <span className="typing-indicator">is typing...</span>
+                                    ) : chat.sender._id === currentUser._id ? (
                                         <span>You: {chat.content}</span>
                                     ) : (
                                         <span>{chat.content}</span>

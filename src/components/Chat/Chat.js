@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 const socket = io(process.env.REACT_APP_API_URL);
 
 
-const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers, typingUser }) => {
+const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers, typingUserId }) => {
     const [newMessage, setNewMessage] = useState('');
     const messageEndRef = useRef(null); // Ref for the last message
     const inputRef = useRef(null); // Reference for the input element
@@ -69,7 +69,7 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers,
 
         markMessagesAsRead();
 
-    }, [messages, onlineUsers]);
+    }, [currentUser._id, messages, onlineUsers, selectedUser._id, typingUserId]);
 
     const isSelectedUserOnline = onlineUsers[selectedUser?._id] === 'online';
 
@@ -83,7 +83,7 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers,
                         <div className={`last-online ${isSelectedUserOnline ? 'online' : ''}`}>
 
                             {isSelectedUserOnline ? 'Online' : formatTimeStamp(selectedUser.timeStamp)}
-                            {typingUser && <div className="typing-indicator">{selectedUser.username} is typing...</div>}
+                            {(typingUserId === selectedUser._id) && <div className="typing-indicator">{selectedUser.username} is typing...</div>}
                         </div>
                     </div>
                 </div>

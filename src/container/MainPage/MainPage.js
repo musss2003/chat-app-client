@@ -17,7 +17,7 @@ const MainPage = ({ currentUser }) => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [chats, setChats] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({}); // State to keep track of online users
-    const [typingUser, setTypingUser] = useState(null); // State to track who is typing
+    const [typingUserId, setTypingUserId] = useState(null); // State to track who is typing
     const [activeComponent, setActiveComponent] = useState('chat');
 
 
@@ -59,11 +59,18 @@ const MainPage = ({ currentUser }) => {
         });
 
         // Join the room when a specific chat is selected
-        if (selectedUserId) {
-            socket.emit('joinRoom', { userId: currentUser._id, selectedUserId });
-        } else {
-            socket.emit('joinRoomAlone', { userId: currentUser._id });
-        }
+        socket.emit('joinRoom', { userId: currentUser._id, selectedUserId });
+
+
+        socket.on('typing', async ({ senderId }) => {
+            setTypingUserId(senderId); // Ensure selectedUser is set before using it
+            console.log(`${selectedUserId} is typing...`);
+        });
+
+        socket.on('stopTyping', ({ senderId }) => {
+            setTypingUserId(null);
+            console.log(`${selectedUserId} stopped typing.`);
+        });
 
         const fetchChats = async () => {
             try {
@@ -110,24 +117,9 @@ const MainPage = ({ currentUser }) => {
 
         fetchMessages();
 
-        socket.on('typing', async ({ senderId }) => {
-            if (senderId === selectedUserId) { // Use selectedUserId instead of selectedUser._id
-                setTypingUser(selectedUser); // Ensure selectedUser is set before using it
-                console.log(`${selectedUser?.username} is typing...`);
-            }
-        });
-
-        socket.on('stopTyping', ({ senderId }) => {
-            if (senderId === selectedUserId) { // Use selectedUserId here as well
-                setTypingUser(null);
-                console.log(`${selectedUser?.username} stopped typing.`);
-            }
-        });
-
         // Clear any previous 'receiveMessage' listener before setting up a new one
         socket.off('receiveMessage');
         socket.on('receiveMessage', (message) => {
-            console.log('Received message:', message);
             fetchChats(); // Fetch the updated chat list
             setMessages((prevMessages) => [...prevMessages, message]);
         });
@@ -156,13 +148,13 @@ const MainPage = ({ currentUser }) => {
             </div>
             <div className="middle-column">
                 <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} />
-                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} onlineUsers={onlineUsers} />
+                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} onlineUsers={onlineUsers} typingUserId={typingUserId} />
             </div>
             <div className="right-column">
-            {(activeComponent === 'userProfile') ? (
+                {(activeComponent === 'userProfile') ? (
                     <UserProfile user={currentUser} />
                 ) : ((activeComponent === 'chat') && selectedUser) ? (
-                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} onlineUsers={onlineUsers} typingUser={typingUser} />
+                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} onlineUsers={onlineUsers} typingUserId={typingUserId} />
                 ) : (
                     <div className="select-user-message">
                         Please select a user to start chatting
