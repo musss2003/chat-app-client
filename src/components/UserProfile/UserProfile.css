@@ -1,0 +1,102 @@
+.user-profile {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.user-profile:hover {
+    transform: translateY(-5px);
+}
+
+.user-profile .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    border: 3px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.user-profile h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #333;
+    font-weight: bold;
+}
+
+.user-profile p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.user-profile .info {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.user-profile .info strong {
+    color: #007bff;
+}
+
+.user-profile blockquote {
+    font-style: italic;
+    color: #666;
+    margin: 10px 0;
+    padding-left: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.user-profile .skills,
+.user-profile .social-media,
+.user-profile .followers {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile .skills ul,
+.user-profile .social-media ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-profile .skills li,
+.user-profile .social-media li {
+    font-size: 15px;
+    color: #333;
+    padding: 4px 0;
+}
+
+.user-profile .social-media a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.user-profile .social-media a:hover {
+    text-decoration: underline;
+}
+
+.user-profile .followers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-profile .followers p {
+    margin: 5px 0;
+    color: #333;
+    font-weight: bold;
+}

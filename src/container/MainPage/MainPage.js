@@ -6,6 +6,7 @@ import ChatList from '../../components/ChatList/ChatList';
 import Chat from '../../components/Chat/Chat';
 import io from 'socket.io-client';
 import axios from 'axios';
+import UserProfile from '../../components/UserProfile/UserProfile';
 const socket = io(process.env.REACT_APP_API_URL);
 
 
@@ -17,9 +18,16 @@ const MainPage = ({ currentUser }) => {
     const [chats, setChats] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({}); // State to keep track of online users
     const [typingUser, setTypingUser] = useState(null); // State to track who is typing
+    const [activeComponent, setActiveComponent] = useState('chat');
 
 
-
+    const handleSetActiveComponent = (component) => {
+        setActiveComponent(component);
+        if (component === 'signOut') {
+            localStorage.removeItem('token'); // Remove token from storage
+            window.location.href = '/login'; // Navigate to login page
+        }
+    };
 
     const updateUserStatus = (userId, status) => {
         setOnlineUsers(prevState => ({
@@ -144,14 +152,16 @@ const MainPage = ({ currentUser }) => {
     return (
         <div className="main-page">
             <div className="left-column">
-                <Sidebar />
+                <Sidebar handleClick={handleSetActiveComponent} activeComponent={activeComponent} />
             </div>
             <div className="middle-column">
                 <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} />
                 <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} onlineUsers={onlineUsers} />
             </div>
             <div className="right-column">
-                {selectedUser ? (
+            {(activeComponent === 'userProfile') ? (
+                    <UserProfile user={currentUser} />
+                ) : ((activeComponent === 'chat') && selectedUser) ? (
                     <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} onlineUsers={onlineUsers} typingUser={typingUser} />
                 ) : (
                     <div className="select-user-message">

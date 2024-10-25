@@ -3,13 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments, faUser, faSearch, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
 
-const Sidebar = () => {
-    const [activeComponent, setActiveComponent] = useState('chatList');
+const Sidebar = ({ handleClick, activeComponent }) => {
 
-    const handleSetActiveComponent = (component) => {
-        setActiveComponent(component);
-        console.log('Setting active component:', component);
-    }
 
     return (
         <div className="sidebar-container">
@@ -17,19 +12,19 @@ const Sidebar = () => {
                 <ul>
                     <li className={activeComponent === 'userProfile' ? 'active' : ''}>
                         <button
-                            onClick={() => handleSetActiveComponent('userProfile')}>
+                            onClick={() => handleClick('userProfile')}>
                             <FontAwesomeIcon icon={faUser} />
                         </button>
                     </li>
-                    <li className={activeComponent === 'chatList' ? 'active' : ''}>
+                    <li className={activeComponent === 'chat' ? 'active' : ''}>
                         <button
-                            onClick={() => handleSetActiveComponent('chatList')}>
+                            onClick={() => handleClick('chat')}>
                             <FontAwesomeIcon icon={faComments} />
                         </button>
                     </li>
                     <li className={activeComponent === 'searchUser' ? 'active' : ''}>
                         <button
-                            onClick={() => handleSetActiveComponent('searchUser')}>
+                            onClick={() => handleClick('searchUser')}>
                             <FontAwesomeIcon icon={faSearch} />
                         </button>
                     </li>
@@ -39,7 +34,7 @@ const Sidebar = () => {
                 <ul>
                     <li className={activeComponent === 'signOut' ? 'active' : ''}>
                         <button
-                            onClick={() => handleSetActiveComponent('signOut')}>
+                            onClick={() => handleClick('signOut')}>
                             <FontAwesomeIcon icon={faSignOutAlt} />
                         </button>
                     </li>

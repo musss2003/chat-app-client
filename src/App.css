@@ -1,3 +1,9 @@
+/* Center the form on the page */
+#root {
+  height: 95vh;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
 
 /* Animation */
 
