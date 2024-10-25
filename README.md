@@ -35,6 +35,10 @@ This chat application allows users to create accounts, log in, and chat with oth
    - Displays online status for users, indicating whether they are currently active.
    - Users can see when their contacts are online or offline.
 
+   ![Chat Application Online Status](src/assets/online_status_1.png)
+
+   ![Chat Application Online Status](src/assets/online_status_2.png)
+
 4. **Typing Indicators**
    - Shows when a user is typing a message, providing a more interactive chatting experience.
    - The typing status is visible to the intended recipient.
@@ -43,6 +47,8 @@ This chat application allows users to create accounts, log in, and chat with oth
    - Users can view their chat history with each contact.
    - Messages are fetched from the server and displayed in the chat interface.
 
+   ![Chat Application Chat History](src/assets/chat_history.png)
+
 6. **User Profiles**
    - Users can view profiles of other users, including their usernames and email addresses.
    - Additional profile information can be added, such as phone number, location, and bio.
@@ -50,6 +56,8 @@ This chat application allows users to create accounts, log in, and chat with oth
 7. **Search Functionality**
    - Users can search for other users to initiate a chat.
    - The search feature allows for quick access to contacts.
+
+   ![Chat Application Search User](src/assets/search_user.png)
 
 8. **Responsive Design**
    - The application is designed to be responsive and user-friendly on both desktop and mobile devices.
