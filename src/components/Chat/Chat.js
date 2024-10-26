@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Chat.css';
 import { formatTimeStamp } from '../../utils/formatTimeStamp';
 import io from 'socket.io-client';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 const socket = io(process.env.REACT_APP_API_URL);
 
 
-const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers, typingUserId }) => {
+const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers, typingUserId, goBack }) => {
     const [newMessage, setNewMessage] = useState('');
     const messageEndRef = useRef(null); // Ref for the last message
     const inputRef = useRef(null); // Reference for the input element
@@ -78,6 +80,9 @@ const Chat = ({ currentUser, selectedUser, onSendMessage, messages, onlineUsers,
         <div className="chat-wrapper">
             {selectedUser && (
                 <div className="chat-topbar">
+                    <button className='go-back-button' onClick={goBack}>
+                        <FontAwesomeIcon icon={faChevronLeft} />
+                    </button>
                     <div className="user-info">
                         <div className="username">{selectedUser.username}</div>
                         <div className={`last-online ${isSelectedUserOnline ? 'online' : ''}`}>

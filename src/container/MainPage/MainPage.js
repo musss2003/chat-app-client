@@ -7,6 +7,8 @@ import Chat from '../../components/Chat/Chat';
 import io from 'socket.io-client';
 import axios from 'axios';
 import UserProfile from '../../components/UserProfile/UserProfile';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 const socket = io(process.env.REACT_APP_API_URL);
 
 
@@ -18,8 +20,18 @@ const MainPage = ({ currentUser }) => {
     const [chats, setChats] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({}); // State to keep track of online users
     const [typingUserId, setTypingUserId] = useState(null); // State to track who is typing
-    const [activeComponent, setActiveComponent] = useState('chat');
+    const [activeComponent, setActiveComponent] = useState('');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    const handleRemovingSelectedUser = () => {
+        setSelectedUser(null);
+        setSelectedUserId(null);
+        setActiveComponent('');
+    }
+
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
 
     const handleSetActiveComponent = (component) => {
         setActiveComponent(component);
@@ -40,11 +52,13 @@ const MainPage = ({ currentUser }) => {
     // Handle selecting a chat from the chat list
     const handleChatSelect = (chat) => {
         setSelectedUserId(chat.sender._id === currentUser._id ? chat.receiver._id : chat.sender._id);
+        setActiveComponent('chat');
     };
 
     // Handle selecting a user from search
     const handleUserSelect = (user) => {
         setSelectedUserId(user._id);
+        setActiveComponent('chat');
     };
 
     // Fetch messages and handle socket events
@@ -131,7 +145,6 @@ const MainPage = ({ currentUser }) => {
             socket.off('updateUserStatus'); // Remove offline listener
             socket.off('typing');
             socket.off('stopTyping');
-            socket.emit('leaveRoom', { userId: currentUser._id, selectedUserId });
         };
     }, [currentUser, selectedUserId]);
 
@@ -143,18 +156,54 @@ const MainPage = ({ currentUser }) => {
 
     return (
         <div className="main-page">
-            <div className="left-column">
-                <Sidebar handleClick={handleSetActiveComponent} activeComponent={activeComponent} />
+            <div className="mobile-header">
+                <button onClick={toggleSidebar}>
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+                <span className="logo">chatApp</span>
+            </div>
+            <div className={`left-column ${sidebarOpen ? 'show' : ''}`}>
+                <Sidebar 
+                    handleClick={handleSetActiveComponent} 
+                    activeComponent={activeComponent} 
+                    sidebarOpen={sidebarOpen} 
+                    onClose={toggleSidebar} 
+                />
             </div>
             <div className="middle-column">
-                <SearchUser currentUser={currentUser} onUserSelect={handleUserSelect} selectedUserId={selectedUserId} />
-                <ChatList currentUser={currentUser} onChatSelect={handleChatSelect} selectedUserId={selectedUserId} chats={chats} onlineUsers={onlineUsers} typingUserId={typingUserId} />
+                <SearchUser
+                    currentUser={currentUser}
+                    onUserSelect={handleUserSelect}
+                    selectedUserId={selectedUserId}
+                />
+                <ChatList
+                    currentUser={currentUser}
+                    onChatSelect={handleChatSelect}
+                    selectedUserId={selectedUserId}
+                    chats={chats}
+                    onlineUsers={onlineUsers}
+                    typingUserId={typingUserId}
+
+                />
+                <div className="footer">
+                    CopyRight 2024 Mustafa Sinnaovic
+                </div>
             </div>
-            <div className="right-column">
+            <div className={`right-column ${activeComponent==='chat' ? 'show' : ''}`}>
                 {(activeComponent === 'userProfile') ? (
-                    <UserProfile user={currentUser} />
+                    <UserProfile 
+                        user={currentUser} 
+                    />
                 ) : ((activeComponent === 'chat') && selectedUser) ? (
-                    <Chat currentUser={currentUser} selectedUser={selectedUser} onSendMessage={handleSendMessage} messages={messages} onlineUsers={onlineUsers} typingUserId={typingUserId} />
+                    <Chat 
+                        currentUser={currentUser} 
+                        selectedUser={selectedUser} 
+                        onSendMessage={handleSendMessage} 
+                        messages={messages} 
+                        onlineUsers={onlineUsers} 
+                        typingUserId={typingUserId}
+                        goBack={handleRemovingSelectedUser} 
+                    />
                 ) : (
                     <div className="select-user-message">
                         Please select a user to start chatting

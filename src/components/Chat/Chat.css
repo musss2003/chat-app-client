@@ -21,6 +21,17 @@
   z-index: 1000;
 }
 
+.go-back-button{
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: rgb(110, 0, 255);
+}
+.go-back-button:hover{
+  background-color: #f1f0f0;
+}
+
 /* User info and status styling */
 .user-info {
   display: flex;
@@ -80,8 +91,11 @@
 }
 
 .message.sent {
-  background-color: #cfe2ff;
+  background-color: rgb(110, 0, 255);
   align-self: flex-end;
+}
+.message.sent .message-content{
+  color: white;
 }
 
 .message-content {
@@ -124,14 +138,14 @@
 }
 
 .chat-input input:focus {
-  border-color: #007bff;
+  border-color: rgb(110, 0, 255);
 }
 
 .chat-input button {
   margin-left: 10px;
   padding: 10px 15px;
   border: none;
-  background-color: #007bff;
+  background-color: rgb(110, 0, 255);
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -139,7 +153,7 @@
 }
 
 .chat-input button:hover {
-  background-color: #0056b3;
+  background-color: rgb(166, 122, 224);
 }
 
 /* Responsive design adjustments */

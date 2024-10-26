@@ -1,5 +1,5 @@
 .chat-list-container {
-    padding: 10px;
+    padding: 0 10px;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(110, 0, 255, 0.2); /* Softer shadow for modern look */

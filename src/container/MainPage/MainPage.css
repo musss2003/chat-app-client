@@ -3,7 +3,7 @@
   grid-template-columns: 0.5fr 3fr 4fr; /* Balanced column widths */
   overflow: hidden;
   height: 100%;
-  padding: 10px 0;
+  padding: 4px;
 }
 
 .left-column {
@@ -16,7 +16,7 @@
 
 .middle-column {
   grid-column: 2 / 3;
-  padding: 20px;
+  padding: 20px 10px;
   display: flex;
   flex-direction: column;
   gap: 20px; /* Space between components */
@@ -40,18 +40,96 @@
   background-color: #f9f9f9;
 }
 
+.mobile-header {
+  display: none;
+}
+.footer{
+  display: none;
+}
+
 /* Mobile responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .main-page {
+    display: block;
     grid-template-columns: 1fr; /* Stack the columns */
     gap: 10px; /* Reduce gap for smaller screens */
   }
 
-  .left-column,
-  .middle-column,
   .right-column {
-    grid-column: auto; /* Auto layout on mobile */
-    max-width: 100%; /* Full width on mobile */
-    padding: 15px; /* Slightly reduce padding for mobile */
+    display: none; /* Hide right column */
+  }
+
+  /* Fullscreen chat on mobile */
+  .right-column.show {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: block;
+    z-index: 100; /* Layer on top of the main content */
+    background-color: white; /* Ensure background covers content */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+  }
+
+  /* Sidebar styling */
+  .left-column {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 100vh; /* Full viewport height */
+    width: 25vw; /* Half screen width */
+    padding: 12px;
+    z-index: 10; /* Layer on top of the main content */
+    transform: translateX(-100%); /* Initially hidden off-screen */
+    transition: transform 0.3s ease; /* Smooth slide-in effect */
+  }
+
+  /* Show sidebar when active */
+  .left-column.show {
+    transform: translateX(0); /* Slide into view */
+  }
+
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    height: 50px;
+    color: black;
+  }
+  .mobile-header button {
+    background: none;
+    border: none;
+    color: rgb(110, 0, 255);
+    cursor: pointer;
+    font-size: 1.5em;
+  }
+  .logo {
+    font-family: "Poppins", sans-serif; /* Use a modern, stylish font */
+    font-size: 2.5em; /* Increase the font size */
+    font-weight: 700; /* Make the text bold */
+    color: rgb(110, 0, 255); /* Use the specified color */
+    text-transform: uppercase; /* Transform text to uppercase */
+    letter-spacing: 3px; /* Add more spacing between letters */
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3); /* Add a more pronounced shadow */
+    background: linear-gradient(
+      45deg,
+      rgb(110, 0, 255),
+      rgba(110, 0, 255, 0.7)
+    ); /* Add a gradient background */
+    -webkit-background-clip: text; /* Clip the background to the text */
+    -webkit-text-fill-color: transparent; /* Make the text fill transparent to show the gradient */
+    padding: 10px; /* Add some padding */
+    border-radius: 5px; /* Slightly round the corners */
+  }
+  .footer{
+    display: inline-block;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
   }
 }
